@@ -3,6 +3,11 @@ import os
 import shutil
 from pathlib import Path
 
+from app.services.stt_google import STT
+
+from dotenv import load_dotenv
+load_dotenv()
+
 app=FastAPI()
 
 UPLOAD_DIR=Path("uploads")
@@ -24,11 +29,14 @@ async def voice(audio: UploadFile=File(...)):
     shutil.copyfileobj(audio.file, buffer)
 
   file_size=save_path.stat().st_size
+  
+  text=STT(save_path)
 
   return {
     "filename": audio.filename,
     "size": file_size,
-    "message": "audio received"
+    "message": "audio received",
+    "transcript": text
   }
 
 
